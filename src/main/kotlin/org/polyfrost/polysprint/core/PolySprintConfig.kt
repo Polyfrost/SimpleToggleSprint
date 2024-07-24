@@ -18,111 +18,107 @@
 
 package org.polyfrost.polysprint.core
 
-import cc.polyfrost.oneconfig.config.Config
-import cc.polyfrost.oneconfig.config.annotations.*
-import cc.polyfrost.oneconfig.config.core.OneKeyBind
-import cc.polyfrost.oneconfig.config.data.Mod
-import cc.polyfrost.oneconfig.config.data.ModType
-import cc.polyfrost.oneconfig.config.migration.VigilanceMigrator
-import cc.polyfrost.oneconfig.events.EventManager
-import cc.polyfrost.oneconfig.events.event.Stage
-import cc.polyfrost.oneconfig.events.event.TickEvent
-import cc.polyfrost.oneconfig.hud.TextHud
-import cc.polyfrost.oneconfig.libs.eventbus.Subscribe
-import cc.polyfrost.oneconfig.libs.universal.UKeyboard
 import net.minecraft.entity.player.EntityPlayer
+import org.polyfrost.oneconfig.api.config.v1.Config
+import org.polyfrost.oneconfig.api.config.v1.annotations.*
+import org.polyfrost.oneconfig.api.event.v1.EventManager
+import org.polyfrost.oneconfig.api.event.v1.events.TickEvent
+import org.polyfrost.oneconfig.api.event.v1.invoke.impl.Subscribe
+import org.polyfrost.oneconfig.api.hud.v1.TextHud
+import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindHelper
+import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindManager.registerKeybind
 import org.polyfrost.polysprint.PolySprint
-import org.polyfrost.polysprint.core.PolySprintConfig.ToggleSprintHud.DisplayState.Companion.activeDisplay
-import java.io.File
+import org.polyfrost.universal.UKeyboard
 import java.math.RoundingMode
 
 
 object PolySprintConfig : Config(
-    Mod(
-        "PolySprint",
-        ModType.PVP,
-        "/polysprint_dark.svg",
-        VigilanceMigrator(File("./config/simpletogglesprint.toml").absolutePath),
-        ),
-    "polysprint.json"
+    //VigilanceMigrator(File("./config/simpletogglesprint.toml").absolutePath),
+    "polysprint.json",
+    "/polysprint_dark.svg",
+    "PolySprint",
+    Category.COMBAT
 ) {
+    // This variable is temporary!
+    var enabled: Boolean = true
 
     @Switch(
-        name = "Toggle Sprint"
+        title = "Toggle Sprint"
     )
     var toggleSprint = true
 
     @Switch(
-        name = "Toggle Sneak"
+        title = "Toggle Sneak"
     )
     var toggleSneak = false
 
     @Switch(
-        name = "Disable W-Tap Sprint"
+        title = "Disable W-Tap Sprint"
     )
     var disableWTapSprint = true
 
     @JvmField
+    @Include
     var toggleSprintState = false
 
     @JvmField
+    @Include
     var toggleSneakState = false
 
     @Switch(
-        name = "Seperate Keybind for Toggle Sprint",
+        title = "Seperate Keybind for Toggle Sprint",
         subcategory = "Toggle Sprint",
         description = "Use a seperate keybind for Toggle Sprint."
     )
     var keybindToggleSprint = false
 
-    @KeyBind(
-        name = "Toggle Sprint Keybind",
+    @Keybind(
+        title = "Toggle Sprint Keybind",
         subcategory = "Toggle Sprint"
     )
-    var keybindToggleSprintKey = OneKeyBind(UKeyboard.KEY_NONE)
+    var keybindToggleSprintKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).register()
 
     @Switch(
-        name = "Seperate Keybind for Toggle Sneak",
+        title = "Seperate Keybind for Toggle Sneak",
         subcategory = "Toggle Sneak",
         description = "Use a seperate keybind for Toggle Sneak."
     )
     var keybindToggleSneak = false
 
-    @KeyBind(
-        name = "Toggle Sneak Keybind",
+    @Keybind(
+        title = "Toggle Sneak Keybind",
         subcategory = "Toggle Sneak"
     )
-    var keybindToggleSneakKey = OneKeyBind(UKeyboard.KEY_NONE)
+    var keybindToggleSneakKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).register()
 
     @Switch(
-        name = "Fly Boost",
+        title = "Fly Boost",
         subcategory = "Fly Boost"
     )
     var toggleFlyBoost = false
 
     @Slider(
-        name = "Fly Boost Amount",
+        title = "Fly Boost Amount",
         subcategory = "Fly Boost",
         min = 1.0F,
         max = 10.0F
     )
     var flyBoostAmount = 4.0F
 
-    @HUD(
-        name = "HUD",
-        subcategory = "HUD"
-    )
-    var hud = ToggleSprintHud()
+    // @HUD(
+    //    title = "HUD",
+    //    subcategory = "HUD"
+    // )
+    // var hud = ToggleSprintHud()
 
     init {
-        initialize()
         addDependency("keybindToggleSprint", "toggleSprint")
         addDependency("keybindToggleSneak", "toggleSneak")
         addDependency("flyBoostAmount", "toggleFlyBoost")
         addDependency("keybindToggleSprintKey", "keybindToggleSprint")
         addDependency("keybindToggleSneakKey", "keybindToggleSneak")
 
-        registerKeyBind(keybindToggleSprintKey) {
+        registerKeybind(keybindToggleSprintKey) {
             if (keybindToggleSprint) {
                 if (enabled && toggleSprint && !PolySprint.sprintHeld) {
                     toggleSprintState = !toggleSprintState
@@ -131,7 +127,7 @@ object PolySprintConfig : Config(
                 PolySprint.sprintHeld = !PolySprint.sprintHeld
             }
         }
-        registerKeyBind(keybindToggleSneakKey) {
+        registerKeybind(keybindToggleSneakKey) {
             if (keybindToggleSneak) {
                 if (enabled && toggleSneak && !PolySprint.sneakHeld) {
                     toggleSneakState = !toggleSneakState
@@ -142,13 +138,13 @@ object PolySprintConfig : Config(
         }
     }
 
-    class ToggleSprintHud : TextHud(true, 0, 1080 - 19) {
+    class ToggleSprintHud : TextHud.Impl(true, 0, 1080 - 19) {
 
-        @Switch(name = "Brackets")
+        @Switch(title = "Brackets")
         private var brackets = true
 
         @Button(
-            name = "Reset Text on ALL HUDs",
+            title = "Reset Text on ALL HUDs",
             text = "Reset"
         )
         var resetText = Runnable {
@@ -167,86 +163,86 @@ object PolySprintConfig : Config(
         }
 
         @Text(
-            name = "Descending Held Text",
+            title = "Descending Held Text",
             category = "Display",
             subcategory = "Text"
         )
         var descendingHeld = "Descending (key held)"
 
         @Text(
-            name = "Descending Toggled Text",
+            title = "Descending Toggled Text",
             category = "Display",
             subcategory = "Text"
         )
         var descendingToggled = "Descending (toggled)"
 
         @Text(
-            name = "Descending Text",
+            title = "Descending Text",
             category = "Display",
             subcategory = "Text"
         )
         var descending = "Descending (vanilla)"
 
         @Text(
-            name = "Flying Text",
+            title = "Flying Text",
             category = "Display",
             subcategory = "Text"
         )
         var flying = "Flying"
 
-        @Exclude var flyBoost = ""
+        var flyBoost = ""
 
         @Text(
-            name = "Fly Boost Text",
+            title = "Fly Boost Text",
             category = "Display",
             subcategory = "Text"
         )
         var flyBoostText = "x boost"
 
         @Text(
-            name = "Riding Text",
+            title = "Riding Text",
             category = "Display",
             subcategory = "Text"
         )
         var riding = "Riding"
 
         @Text(
-            name = "Sneak Held Text",
+            title = "Sneak Held Text",
             category = "Display",
             subcategory = "Text"
         )
         var sneakHeld = "Sneaking (key held)"
 
         @Text(
-            name = "Sneak Toggle Text",
+            title = "Sneak Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
         var sneakToggle = "Sneaking (toggled)"
 
         @Text(
-            name = "Sneaking Text",
+            title = "Sneaking Text",
             category = "Display",
             subcategory = "Text"
         )
         var sneak = "Sneaking (vanilla)"
 
         @Text(
-            name = "Sprint Held Text",
+            title = "Sprint Held Text",
             category = "Display",
             subcategory = "Text"
         )
         var sprintHeld = "Sprinting (key held)"
 
         @Text(
-            name = "Sprint Toggle Text",
+            title = "Sprint Toggle Text",
             category = "Display",
             subcategory = "Text"
         )
         var sprintToggle = "Sprinting (toggled)"
 
         @Text(
-            name = "Sprinting Text",
+            title = "Sprinting Text",
             category = "Display",
             subcategory = "Text"
         )
@@ -257,21 +253,40 @@ object PolySprintConfig : Config(
         }
 
         @Subscribe
-        fun onTick(e: TickEvent) {
-            if (e.stage == Stage.START) {
-                flyBoost = if (shouldFlyBoost()) {
-                    "$flying (${flyBoostAmount.toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)}$flyBoostText)"
-                } else {
-                    flying
-                }
+        fun onTick(e: TickEvent.Start) {
+            flyBoost = if (shouldFlyBoost()) {
+                "$flying (${flyBoostAmount.toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)}$flyBoostText)"
+            } else {
+                flying
             }
         }
 
-        override fun getLines(lines: MutableList<String>, example: Boolean) {
-            getCompleteText(activeDisplay)?.let { lines.add(it) }
+        override fun category(): Category {
+            TODO("Not yet implemented")
         }
 
-        private fun getCompleteText(text: String?) = if (brackets && text?.isNotEmpty() == true) "[$text]" else text
+        override fun getText(): String {
+            TODO("Not yet implemented")
+        }
+
+        override fun id(): String {
+            TODO("Not yet implemented")
+        }
+
+        override fun title(): String {
+            TODO("Not yet implemented")
+        }
+
+        override fun updateFrequency(): Long {
+            TODO("Not yet implemented")
+        }
+    }
+
+        // override fun getLines(lines: MutableList<String>, example: Boolean) {
+        //     getCompleteText(activeDisplay)?.let { lines.add(it) }
+        // }
+
+        // private fun getCompleteText(text: String?) = if (brackets && text?.isNotEmpty() == true) "[$text]" else text
 
         private enum class DisplayState(val displayText: ToggleSprintHud.() -> String, val displayCheck: (EntityPlayer) -> Boolean) {
             DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),

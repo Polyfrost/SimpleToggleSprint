@@ -18,8 +18,8 @@
 
 package org.polyfrost.polysprint.tweaker
 
-import cc.polyfrost.oneconfig.utils.Notifications
 import net.minecraftforge.fml.relauncher.CoreModManager
+import org.polyfrost.oneconfig.api.ui.v1.notifications.Notifications
 import org.spongepowered.asm.lib.tree.ClassNode
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
@@ -31,7 +31,7 @@ class MixinPlugin : IMixinConfigPlugin {
         for ((key, value) in CoreModManager.getTransformers()) {
             if (key.startsWith("PlayerAPIPlugin") && value.contains("api.player.forge.PlayerAPITransformer")) {
                 println("PlayerAPI detected.")
-                Notifications.INSTANCE.send("PolySprint", "PlayerAPI has been detected.\nAlthough supported, it is not recommended or needed for any recent mod.\nIt is recommended you delete it.")
+                Notifications.send("PolySprint", "PlayerAPI has been detected.\nAlthough supported, it is not recommended or needed for any recent mod.\nIt is recommended you delete it.")
                 hasPlayerAPI = true
                 break
             }

@@ -17,17 +17,17 @@
  */
 package org.polyfrost.polysprint
 
-import cc.polyfrost.oneconfig.libs.universal.UMinecraft
-import cc.polyfrost.oneconfig.utils.commands.CommandManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import org.polyfrost.oneconfig.api.commands.v1.CommandManager
 import org.polyfrost.polysprint.commands.PolySprintCommand
 import org.polyfrost.polysprint.core.PolySprintConfig
 import org.polyfrost.polysprint.core.checkKeyCode
+import org.polyfrost.universal.UMinecraft
 
 @Mod(
     modid = PolySprint.MODID,
@@ -57,7 +57,7 @@ object PolySprint {
 
     @Mod.EventHandler
     fun onPostInit(event: FMLPostInitializationEvent) {
-        CommandManager.INSTANCE.registerCommand(PolySprintCommand())
+        CommandManager.registerCommand(PolySprintCommand())
     }
 
 

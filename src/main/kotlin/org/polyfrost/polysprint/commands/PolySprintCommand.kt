@@ -17,15 +17,15 @@
  */
 package org.polyfrost.polysprint.commands
 
-import cc.polyfrost.oneconfig.utils.commands.annotations.Command
-import cc.polyfrost.oneconfig.utils.commands.annotations.Main
+import org.polyfrost.oneconfig.api.commands.v1.factories.annotated.Command
 import org.polyfrost.polysprint.core.PolySprintConfig
 
-@Command("polysprint", aliases = ["sts", "togglesprint", "togglesneak", "simpletogglesprint"])
+@Command("polysprint", "sts", "togglesprint", "togglesneak", "simpletogglesprint")
 class PolySprintCommand {
 
-    @Main
+    @Command
     fun execCommand() {
-        PolySprintConfig.openGui()
+        TODO("Not yet implemented")
+        // PolySprintConfig.openGui()
     }
 }

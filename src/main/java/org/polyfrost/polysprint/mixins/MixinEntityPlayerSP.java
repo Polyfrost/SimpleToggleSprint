@@ -64,7 +64,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
             )
     )
     private boolean redirectWTap(EntityPlayerSP instance) {
-        return !PolySprintConfig.INSTANCE.enabled || !PolySprintConfig.INSTANCE.getDisableWTapSprint();
+        return !PolySprintConfig.INSTANCE.getEnabled() || !PolySprintConfig.INSTANCE.getDisableWTapSprint();
     }
 
     @Inject(
