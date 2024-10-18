@@ -76,7 +76,15 @@ object PolySprintConfig : Config(
         title = "Toggle Sprint Keybind",
         subcategory = "Toggle Sprint"
     )
-    var keybindToggleSprintKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).register()
+    var keybindToggleSprintKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does(Runnable {
+        if (keybindToggleSprint) {
+            if (enabled && toggleSprint && !PolySprint.sprintHeld) {
+                toggleSprintState = !toggleSprintState
+                PolySprintConfig.save()
+            }
+            PolySprint.sprintHeld = !PolySprint.sprintHeld
+        }
+    }).register()
 
     @Switch(
         title = "Seperate Keybind for Toggle Sneak",
@@ -89,7 +97,15 @@ object PolySprintConfig : Config(
         title = "Toggle Sneak Keybind",
         subcategory = "Toggle Sneak"
     )
-    var keybindToggleSneakKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).register()
+    var keybindToggleSneakKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does(Runnable {
+        if (keybindToggleSneak) {
+            if (enabled && toggleSneak && !PolySprint.sneakHeld) {
+                toggleSneakState = !toggleSneakState
+                PolySprintConfig.save()
+            }
+            PolySprint.sneakHeld = !PolySprint.sneakHeld
+        }
+    }).register()
 
     @Switch(
         title = "Fly Boost",
@@ -118,24 +134,8 @@ object PolySprintConfig : Config(
         addDependency("keybindToggleSprintKey", "keybindToggleSprint")
         addDependency("keybindToggleSneakKey", "keybindToggleSneak")
 
-        registerKeybind(keybindToggleSprintKey) {
-            if (keybindToggleSprint) {
-                if (enabled && toggleSprint && !PolySprint.sprintHeld) {
-                    toggleSprintState = !toggleSprintState
-                    PolySprintConfig.save()
-                }
-                PolySprint.sprintHeld = !PolySprint.sprintHeld
-            }
-        }
-        registerKeybind(keybindToggleSneakKey) {
-            if (keybindToggleSneak) {
-                if (enabled && toggleSneak && !PolySprint.sneakHeld) {
-                    toggleSneakState = !toggleSneakState
-                    PolySprintConfig.save()
-                }
-                PolySprint.sneakHeld = !PolySprint.sneakHeld
-            }
-        }
+        registerKeybind(keybindToggleSprintKey)
+        registerKeybind(keybindToggleSneakKey)
     }
 
     class ToggleSprintHud : TextHud.Impl(true, 0, 1080 - 19) {
