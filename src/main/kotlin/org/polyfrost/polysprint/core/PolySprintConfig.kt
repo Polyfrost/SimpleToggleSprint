@@ -25,9 +25,11 @@ import org.polyfrost.oneconfig.api.event.v1.EventManager
 import org.polyfrost.oneconfig.api.event.v1.events.TickEvent
 import org.polyfrost.oneconfig.api.event.v1.invoke.impl.Subscribe
 import org.polyfrost.oneconfig.api.hud.v1.TextHud
-import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindHelper
 import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindManager.registerKeybind
 import org.polyfrost.polysprint.PolySprint
+import org.polyfrost.polysprint.core.PolySprintConfig.DisplayState.Companion.activeDisplay
+import org.polyfrost.polyui.input.KeybindHelper
+import org.polyfrost.polyui.unit.seconds
 import org.polyfrost.universal.UKeyboard
 import java.math.RoundingMode
 
@@ -76,7 +78,7 @@ object PolySprintConfig : Config(
         title = "Toggle Sprint Keybind",
         subcategory = "Toggle Sprint"
     )
-    var keybindToggleSprintKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does(Runnable {
+    var keybindToggleSprintKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does {
         if (keybindToggleSprint) {
             if (enabled && toggleSprint && !PolySprint.sprintHeld) {
                 toggleSprintState = !toggleSprintState
@@ -84,7 +86,7 @@ object PolySprintConfig : Config(
             }
             PolySprint.sprintHeld = !PolySprint.sprintHeld
         }
-    }).register()
+    }.build()
 
     @Switch(
         title = "Seperate Keybind for Toggle Sneak",
@@ -97,7 +99,7 @@ object PolySprintConfig : Config(
         title = "Toggle Sneak Keybind",
         subcategory = "Toggle Sneak"
     )
-    var keybindToggleSneakKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does(Runnable {
+    var keybindToggleSneakKey = KeybindHelper.builder().keys(UKeyboard.KEY_NONE).does {
         if (keybindToggleSneak) {
             if (enabled && toggleSneak && !PolySprint.sneakHeld) {
                 toggleSneakState = !toggleSneakState
@@ -105,7 +107,7 @@ object PolySprintConfig : Config(
             }
             PolySprint.sneakHeld = !PolySprint.sneakHeld
         }
-    }).register()
+    }.build()
 
     @Switch(
         title = "Fly Boost",
@@ -138,7 +140,7 @@ object PolySprintConfig : Config(
         registerKeybind(keybindToggleSneakKey)
     }
 
-    class ToggleSprintHud : TextHud.Impl(true, 0, 1080 - 19) {
+    class ToggleSprintHud : TextHud("") {
 
         @Switch(title = "Brackets")
         private var brackets = true
@@ -247,7 +249,7 @@ object PolySprintConfig : Config(
             subcategory = "Text"
         )
         var sprint = "Sprinting (vanilla)"
-        
+
         init {
             EventManager.INSTANCE.register(this)
         }
@@ -261,63 +263,57 @@ object PolySprintConfig : Config(
             }
         }
 
-        override fun category(): Category {
-            TODO("Not yet implemented")
-        }
+        override fun getText() =
+            activeDisplay?.let { text -> if (brackets && text.isNotEmpty()) "[$text]" else text } ?: ""
 
-        override fun getText(): String {
-            TODO("Not yet implemented")
-        }
+        override fun id() = "togglesprint.json"
 
-        override fun id(): String {
-            TODO("Not yet implemented")
-        }
+        override fun category() = Category.PLAYER
 
-        override fun title(): String {
-            TODO("Not yet implemented")
-        }
+        override fun title() = "Toggle Sprint"
 
-        override fun updateFrequency(): Long {
-            TODO("Not yet implemented")
-        }
+        override fun updateFrequency() = 1.seconds
     }
 
-        // override fun getLines(lines: MutableList<String>, example: Boolean) {
-        //     getCompleteText(activeDisplay)?.let { lines.add(it) }
-        // }
+    // override fun getLines(lines: MutableList<String>, example: Boolean) {
+    //     getCompleteText(activeDisplay)?.let { lines.add(it) }
+    // }
 
-        // private fun getCompleteText(text: String?) = if (brackets && text?.isNotEmpty() == true) "[$text]" else text
+    // private fun getCompleteText(text: String?) = if (brackets && text?.isNotEmpty() == true) "[$text]" else text
 
-        private enum class DisplayState(val displayText: ToggleSprintHud.() -> String, val displayCheck: (EntityPlayer) -> Boolean) {
-            DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),
-            DESCENDINGTOGGLED({ descendingToggled }, { it.capabilities.isFlying && PolySprintConfig.enabled && toggleSprint && toggleSneakState }),
-            DESCENDING({ descending }, { it.capabilities.isFlying && it.isSneaking }),
-            FLYING({ flying }, { it.capabilities.isFlying && !shouldFlyBoost() }),
-            FLYBOOST({ flyBoost }, { it.capabilities.isFlying && shouldFlyBoost() }),
-            RIDING({ riding }, { it.isRiding }),
-            SNEAKHELD({ sneakHeld }, { it.isSneaking && PolySprint.sneakHeld }),
-            TOGGLESNEAK({ sneakToggle }, { PolySprintConfig.enabled && toggleSneak && toggleSneakState }),
-            SNEAKING({ sneak }, { it.isSneaking }),
-            SPRINTHELD({ sprintHeld }, { it.isSprinting && PolySprint.sprintHeld }),
-            TOGGLESPRINT({ sprintToggle }, { PolySprintConfig.enabled && toggleSprint && toggleSprintState }),
-            SPRINTING({ sprint }, { it.isSprinting });
+    private enum class DisplayState(
+        val displayText: ToggleSprintHud.() -> String,
+        val displayCheck: (EntityPlayer) -> Boolean
+    ) {
+        DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),
+        DESCENDINGTOGGLED(
+            { descendingToggled },
+            { it.capabilities.isFlying && PolySprintConfig.enabled && toggleSprint && toggleSneakState }),
+        DESCENDING({ descending }, { it.capabilities.isFlying && it.isSneaking }),
+        FLYING({ flying }, { it.capabilities.isFlying && !shouldFlyBoost() }),
+        FLYBOOST({ flyBoost }, { it.capabilities.isFlying && shouldFlyBoost() }),
+        RIDING({ riding }, { it.isRiding }),
+        SNEAKHELD({ sneakHeld }, { it.isSneaking && PolySprint.sneakHeld }),
+        TOGGLESNEAK({ sneakToggle }, { PolySprintConfig.enabled && toggleSneak && toggleSneakState }),
+        SNEAKING({ sneak }, { it.isSneaking }),
+        SPRINTHELD({ sprintHeld }, { it.isSprinting && PolySprint.sprintHeld }),
+        TOGGLESPRINT({ sprintToggle }, { PolySprintConfig.enabled && toggleSprint && toggleSprintState }),
+        SPRINTING({ sprint }, { it.isSprinting });
 
-            val isActive: Boolean
-                get() = displayCheck(PolySprint.player!!)
+        val isActive: Boolean
+            get() = displayCheck(PolySprint.player!!)
 
-            companion object {
-                private val items by lazy {
-                    return@lazy if (KotlinVersion.CURRENT.isAtLeast(1, 9)) entries else values().toList()
-                }
-
-                
-                val ToggleSprintHud.activeDisplay: String?
-                    get() {
-                        if (PolySprint.player == null) return null
-                        return items.find { it.isActive }?.displayText?.invoke(this)
-                    }
+        companion object {
+            private val items by lazy {
+                return@lazy if (KotlinVersion.CURRENT.isAtLeast(1, 9)) entries else values().toList()
             }
+
+
+            val ToggleSprintHud.activeDisplay: String?
+                get() {
+                    if (PolySprint.player == null) return null
+                    return items.find { it.isActive }?.displayText?.invoke(this)
+                }
         }
     }
-
 }

@@ -20,7 +20,7 @@ package org.polyfrost.polysprint.core
 
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Mouse
-import org.polyfrost.oneconfig.api.hypixel.v0.HypixelUtils
+import org.polyfrost.oneconfig.api.hypixel.v1.HypixelUtils
 import org.polyfrost.polysprint.PolySprint.gameSettings
 import org.polyfrost.polysprint.PolySprint.player
 import org.polyfrost.universal.UKeyboard

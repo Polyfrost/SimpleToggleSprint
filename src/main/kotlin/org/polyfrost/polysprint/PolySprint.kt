@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.polyfrost.oneconfig.api.commands.v1.CommandManager
+import org.polyfrost.oneconfig.api.hud.v1.HudManager
 import org.polyfrost.polysprint.commands.PolySprintCommand
 import org.polyfrost.polysprint.core.PolySprintConfig
 import org.polyfrost.polysprint.core.checkKeyCode
@@ -34,13 +35,13 @@ import org.polyfrost.universal.UMinecraft
     name = PolySprint.MOD_NAME,
     version = PolySprint.VERSION,
     clientSideOnly = true,
-    modLanguageAdapter = "cc.polyfrost.oneconfig.utils.KotlinLanguageAdapter"
+    modLanguageAdapter = "org.polyfrost.oneconfig.utils.v1.forge.KotlinLanguageAdapter"
 )
 object PolySprint {
 
-    const val MODID = "@ID@"
-    const val MOD_NAME = "@NAME@"
-    const val VERSION = "@VER@"
+    const val MODID = "@MOD_ID@"
+    const val MOD_NAME = "@MOD_NAME@"
+    const val VERSION = "@MOD_VERSION@"
     val player
         get() = UMinecraft.getPlayer()
     val gameSettings
@@ -51,12 +52,15 @@ object PolySprint {
 
     @Mod.EventHandler
     fun onInit(event: FMLInitializationEvent) {
+        println("PolySprint initialized")
+
         PolySprintConfig
         MinecraftForge.EVENT_BUS.register(this)
     }
 
     @Mod.EventHandler
     fun onPostInit(event: FMLPostInitializationEvent) {
+        HudManager.register(PolySprintConfig.ToggleSprintHud())
         CommandManager.registerCommand(PolySprintCommand())
     }
 

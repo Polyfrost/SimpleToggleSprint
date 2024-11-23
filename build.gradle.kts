@@ -20,7 +20,7 @@ preprocess {
 
 toolkitLoomHelper {
     // Adds OneConfig to our project
-    useOneConfig(mcData.version, mcData.loader, "commands", "config-impl", "events", "internal", "ui")
+    useOneConfig(mcData, "commands", "config", "config-impl", "events", "internal", "ui")
     useDevAuth()
 
     // Removes the server configs from IntelliJ IDEA, leaving only client runs.
@@ -34,8 +34,7 @@ toolkitLoomHelper {
 
     // Adds the tweak class if we are building legacy version of forge as per the documentation (https://docs.polyfrost.org)
     if (mcData.isLegacyForge) {
-        useCoreMod("org.polyfrost.craftycrashes.plugin.LegacyCraftyCrashesLoadingPlugin")
-        useTweaker("org.polyfrost.oneconfig.internal.legacy.OneConfigTweaker", GameSide.CLIENT)
+        useTweaker("org.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker", GameSide.CLIENT)
         useForgeMixin(modData.id) // Configures the mixins if we are building for forge, useful for when we are dealing with cross-platform projects.
     }
 }
