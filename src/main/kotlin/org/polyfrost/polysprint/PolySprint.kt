@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.polyfrost.oneconfig.api.commands.v1.CommandManager
+import org.polyfrost.oneconfig.api.event.v1.events.Event
 import org.polyfrost.oneconfig.api.hud.v1.HudManager
 import org.polyfrost.polysprint.commands.PolySprintCommand
 import org.polyfrost.polysprint.core.PolySprintConfig
@@ -90,4 +91,12 @@ object PolySprint {
         }
     }
 
+    object SprintStart : Event
+    object SprintEnd : Event
+    object RideStart : Event
+    object RideEnd : Event
+    object SneakStart : Event
+    object SneakEnd : Event
+    object FlyStart : Event
+    object FlyEnd : Event
 }

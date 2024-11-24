@@ -22,9 +22,13 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.util.MovementInput;
 import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
+import org.polyfrost.oneconfig.api.event.v1.EventManager;
+import org.polyfrost.oneconfig.api.event.v1.events.Event;
+import org.polyfrost.polysprint.PolySprint;
 import org.polyfrost.polysprint.core.PolySprintConfig;
 import org.polyfrost.polysprint.core.UtilsKt;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,11 +39,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityPlayerSP.class)
-public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
+public abstract class EntityPlayerSPMixin extends AbstractClientPlayer {
 
     @Shadow public MovementInput movementInput;
 
-    public MixinEntityPlayerSP(World worldIn, GameProfile playerProfile) {
+    public EntityPlayerSPMixin(World worldIn, GameProfile playerProfile) {
         super(worldIn, playerProfile);
     }
 
@@ -87,6 +91,25 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
         } else {
             capabilities.setFlySpeed(0.05F);
         }
+    }
+
+    @Redirect(
+            method = "onLivingUpdate",
+            at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerCapabilities;isFlying:Z", opcode = Opcodes.PUTFIELD)
+    )
+    private void onSetFlying(PlayerCapabilities instance, boolean state) {
+        Event ev;
+        if (state) ev = PolySprint.FlyStart.INSTANCE;
+        else ev = PolySprint.FlyEnd.INSTANCE;
+        EventManager.INSTANCE.post(ev);
+    }
+
+    @Inject(method = "setSprinting", at = @At("HEAD"))
+    private void onSetSprinting(boolean state, CallbackInfo ci) {
+        Event ev;
+        if (state) ev = PolySprint.SprintStart.INSTANCE;
+        else ev = PolySprint.SprintEnd.INSTANCE;
+        EventManager.INSTANCE.post(ev);
     }
 
 }

@@ -4,9 +4,14 @@
   "plugin": "org.polyfrost.polysprint.tweaker.MixinPlugin",
   "refmap": "mixins.polysprint.refmap.json",
   "mixins": [
-    "MixinEntityPlayerSP",
-    "MixinMovementInputFromOptions",
-    "playerapi.MixinClientPlayerAPI"
+    "EntityMixin",
+    "EntityPlayerSPMixin",
+    "MovementInputFromOptionsMixin",
+    "WorldSettingsMixin",
+    "playerapi.ClientPlayerAPIMixin"
   ],
-  "verbose": true
+  "verbose": true,
+  "client": [
+    "NetHandlerPlayClientMixin"
+  ]
 }

@@ -18,20 +18,15 @@
 
 package org.polyfrost.polysprint.core
 
-import net.minecraft.entity.player.EntityPlayer
 import org.polyfrost.oneconfig.api.config.v1.Config
 import org.polyfrost.oneconfig.api.config.v1.annotations.*
-import org.polyfrost.oneconfig.api.event.v1.EventManager
-import org.polyfrost.oneconfig.api.event.v1.events.TickEvent
-import org.polyfrost.oneconfig.api.event.v1.invoke.impl.Subscribe
+import org.polyfrost.oneconfig.api.event.v1.eventHandler
 import org.polyfrost.oneconfig.api.hud.v1.TextHud
 import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindManager.registerKeybind
 import org.polyfrost.polysprint.PolySprint
-import org.polyfrost.polysprint.core.PolySprintConfig.DisplayState.Companion.activeDisplay
 import org.polyfrost.polyui.input.KeybindHelper
-import org.polyfrost.polyui.unit.seconds
+import org.polyfrost.polyui.unit.fix
 import org.polyfrost.universal.UKeyboard
-import java.math.RoundingMode
 
 
 object PolySprintConfig : Config(
@@ -142,6 +137,11 @@ object PolySprintConfig : Config(
 
     class ToggleSprintHud : TextHud("") {
 
+        private var isSneaking = false
+        private var isFlying = false
+        private var isSprinting = false
+        private var isRiding = false
+
         @Switch(title = "Brackets")
         private var brackets = true
 
@@ -191,8 +191,6 @@ object PolySprintConfig : Config(
             subcategory = "Text"
         )
         var flying = "Flying"
-
-        var flyBoost = ""
 
         @Text(
             title = "Fly Boost Text",
@@ -250,70 +248,48 @@ object PolySprintConfig : Config(
         )
         var sprint = "Sprinting (vanilla)"
 
-        init {
-            EventManager.INSTANCE.register(this)
+        override fun initialize() {
+            eventHandler { _: PolySprint.SneakStart -> isSneaking = true; updateAndRecalculate() }
+            eventHandler { _: PolySprint.SneakEnd -> isSneaking = false; updateAndRecalculate() }
+            eventHandler { _: PolySprint.FlyStart -> isFlying = true; updateAndRecalculate() }
+            eventHandler { _: PolySprint.FlyEnd -> isFlying = false; updateAndRecalculate() }
+            eventHandler { _: PolySprint.RideStart -> isRiding = true; updateAndRecalculate() }
+            eventHandler { _: PolySprint.RideEnd -> isRiding = false; updateAndRecalculate() }
+            eventHandler { _: PolySprint.SprintStart -> isSprinting = true; updateAndRecalculate() }
+            eventHandler { _: PolySprint.SprintEnd -> isSprinting = false; updateAndRecalculate() }
         }
 
-        @Subscribe
-        fun onTick(e: TickEvent.Start) {
-            flyBoost = if (shouldFlyBoost()) {
-                "$flying (${flyBoostAmount.toBigDecimal().setScale(2, RoundingMode.HALF_EVEN)}$flyBoostText)"
-            } else {
-                flying
+        override fun getText(): String? {
+            if (brackets) sb.append('[')
+            if (isFlying) {
+                if (isSneaking) {
+                    if (PolySprint.sneakHeld) sb.append(descendingHeld)
+                    else if (enabled && toggleSprint && toggleSneakState) sb.append(descendingToggled)
+                    else sb.append(descending)
+                } else {
+                    sb.append(flying)
+                    if (shouldFlyBoost()) {
+                        sb.append(' ').append(flyBoostAmount.fix(2)).append(flyBoostText)
+                    }
+                }
+            } else if (isRiding) sb.append(riding)
+            else if (isSneaking) {
+                if (PolySprint.sneakHeld) sb.append(sneakHeld)
+                else if (enabled && toggleSneak && toggleSneakState) sb.append(sneakToggle)
+                else sb.append(sneak)
+            } else if (isSprinting) {
+                if (PolySprint.sprintHeld) sb.append(sprintHeld)
+                else if (enabled && toggleSprint && toggleSprintState) sb.append(sprintToggle)
+                else sb.append(sprint)
             }
+            if (brackets) sb.append(']')
+            return null
         }
-
-        override fun getText() =
-            activeDisplay?.let { text -> if (brackets && text.isNotEmpty()) "[$text]" else text } ?: ""
 
         override fun id() = "togglesprint.json"
 
         override fun category() = Category.PLAYER
 
         override fun title() = "Toggle Sprint"
-
-        override fun updateFrequency() = 1.seconds
-    }
-
-    // override fun getLines(lines: MutableList<String>, example: Boolean) {
-    //     getCompleteText(activeDisplay)?.let { lines.add(it) }
-    // }
-
-    // private fun getCompleteText(text: String?) = if (brackets && text?.isNotEmpty() == true) "[$text]" else text
-
-    private enum class DisplayState(
-        val displayText: ToggleSprintHud.() -> String,
-        val displayCheck: (EntityPlayer) -> Boolean
-    ) {
-        DESCENDINGHELD({ descendingHeld }, { it.capabilities.isFlying && it.isSneaking && PolySprint.sneakHeld }),
-        DESCENDINGTOGGLED(
-            { descendingToggled },
-            { it.capabilities.isFlying && PolySprintConfig.enabled && toggleSprint && toggleSneakState }),
-        DESCENDING({ descending }, { it.capabilities.isFlying && it.isSneaking }),
-        FLYING({ flying }, { it.capabilities.isFlying && !shouldFlyBoost() }),
-        FLYBOOST({ flyBoost }, { it.capabilities.isFlying && shouldFlyBoost() }),
-        RIDING({ riding }, { it.isRiding }),
-        SNEAKHELD({ sneakHeld }, { it.isSneaking && PolySprint.sneakHeld }),
-        TOGGLESNEAK({ sneakToggle }, { PolySprintConfig.enabled && toggleSneak && toggleSneakState }),
-        SNEAKING({ sneak }, { it.isSneaking }),
-        SPRINTHELD({ sprintHeld }, { it.isSprinting && PolySprint.sprintHeld }),
-        TOGGLESPRINT({ sprintToggle }, { PolySprintConfig.enabled && toggleSprint && toggleSprintState }),
-        SPRINTING({ sprint }, { it.isSprinting });
-
-        val isActive: Boolean
-            get() = displayCheck(PolySprint.player!!)
-
-        companion object {
-            private val items by lazy {
-                return@lazy if (KotlinVersion.CURRENT.isAtLeast(1, 9)) entries else values().toList()
-            }
-
-
-            val ToggleSprintHud.activeDisplay: String?
-                get() {
-                    if (PolySprint.player == null) return null
-                    return items.find { it.isActive }?.displayText?.invoke(this)
-                }
-        }
     }
 }
