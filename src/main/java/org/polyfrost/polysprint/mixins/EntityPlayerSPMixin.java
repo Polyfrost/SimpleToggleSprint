@@ -98,6 +98,7 @@ public abstract class EntityPlayerSPMixin extends AbstractClientPlayer {
             at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerCapabilities;isFlying:Z", opcode = Opcodes.PUTFIELD)
     )
     private void onSetFlying(PlayerCapabilities instance, boolean state) {
+        instance.isFlying = state;
         Event ev;
         if (state) ev = PolySprint.FlyStart.INSTANCE;
         else ev = PolySprint.FlyEnd.INSTANCE;

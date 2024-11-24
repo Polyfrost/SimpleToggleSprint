@@ -42,7 +42,8 @@ public abstract class ClientPlayerAPIMixin extends AbstractClientPlayer {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/settings/KeyBinding;isKeyDown()Z"
-            )
+            ),
+            remap = false
     )
     private boolean setSprintState(KeyBinding keyBinding) {
         return UtilsKt.shouldSetSprint(keyBinding);

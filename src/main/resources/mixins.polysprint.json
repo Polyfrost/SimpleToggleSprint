@@ -4,7 +4,7 @@
   "plugin": "org.polyfrost.polysprint.tweaker.MixinPlugin",
   "refmap": "mixins.polysprint.refmap.json",
   "mixins": [
-    "EntityMixin",
+    "EntityLivingBaseMixin",
     "EntityPlayerSPMixin",
     "MovementInputFromOptionsMixin",
     "WorldSettingsMixin",

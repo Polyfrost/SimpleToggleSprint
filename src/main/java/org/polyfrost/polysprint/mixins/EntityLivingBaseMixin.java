@@ -20,6 +20,7 @@ package org.polyfrost.polysprint.mixins;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import org.polyfrost.oneconfig.api.event.v1.EventManager;
 import org.polyfrost.oneconfig.api.event.v1.events.Event;
 import org.polyfrost.polysprint.PolySprint;
@@ -28,19 +29,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
-public abstract class EntityMixin {
-    @Inject(method = "setSneaking", at = @At("HEAD"))
-    private void onSetSneaking(boolean state, CallbackInfo ci) {
-        //noinspection ConstantConditions
-        if ((Object) this == Minecraft.getMinecraft().thePlayer) {
-            Event ev;
-            if (state) ev = PolySprint.SneakStart.INSTANCE;
-            else ev = PolySprint.SneakEnd.INSTANCE;
-            EventManager.INSTANCE.post(ev);
-        }
-    }
-
+@Mixin(EntityLivingBase.class)
+public abstract class EntityLivingBaseMixin {
     @Inject(method = "mountEntity", at = @At("HEAD"))
     private void onMount(Entity entityIn, CallbackInfo ci) {
         //noinspection ConstantConditions

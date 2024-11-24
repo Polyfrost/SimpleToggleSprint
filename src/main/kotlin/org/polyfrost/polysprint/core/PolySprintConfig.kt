@@ -249,14 +249,14 @@ object PolySprintConfig : Config(
         var sprint = "Sprinting (vanilla)"
 
         override fun initialize() {
-            eventHandler { _: PolySprint.SneakStart -> isSneaking = true; updateAndRecalculate() }
-            eventHandler { _: PolySprint.SneakEnd -> isSneaking = false; updateAndRecalculate() }
-            eventHandler { _: PolySprint.FlyStart -> isFlying = true; updateAndRecalculate() }
-            eventHandler { _: PolySprint.FlyEnd -> isFlying = false; updateAndRecalculate() }
-            eventHandler { _: PolySprint.RideStart -> isRiding = true; updateAndRecalculate() }
-            eventHandler { _: PolySprint.RideEnd -> isRiding = false; updateAndRecalculate() }
-            eventHandler { _: PolySprint.SprintStart -> isSprinting = true; updateAndRecalculate() }
-            eventHandler { _: PolySprint.SprintEnd -> isSprinting = false; updateAndRecalculate() }
+            eventHandler { _: PolySprint.SneakStart -> isSneaking = true; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.SneakEnd -> isSneaking = false; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.FlyStart -> isFlying = true; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.FlyEnd -> isFlying = false; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.RideStart -> isRiding = true; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.RideEnd -> isRiding = false; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.SprintStart -> isSprinting = true; updateAndRecalculate() }.register()
+            eventHandler { _: PolySprint.SprintEnd -> isSprinting = false; updateAndRecalculate() }.register()
         }
 
         override fun getText(): String? {
@@ -283,6 +283,7 @@ object PolySprintConfig : Config(
                 else sb.append(sprint)
             }
             if (brackets) sb.append(']')
+            // hidden = sb.isEmpty() // todo
             return null
         }
 

@@ -31,6 +31,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class NetHandlerPlayClientMixin {
     @Redirect(method = "handlePlayerAbilities", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/PlayerCapabilities;isFlying:Z"))
     private void onSetFlying(PlayerCapabilities instance, boolean state) {
+        instance.isFlying = state;
         Event ev;
         if (state) ev = PolySprint.FlyStart.INSTANCE;
         else ev = PolySprint.FlyEnd.INSTANCE;

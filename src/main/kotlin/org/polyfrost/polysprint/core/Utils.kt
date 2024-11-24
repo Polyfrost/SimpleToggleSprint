@@ -27,11 +27,11 @@ import org.polyfrost.universal.UKeyboard
 import org.polyfrost.universal.UScreen
 
 fun shouldSetSprint(keyBinding: KeyBinding): Boolean {
-    return keyBinding.isKeyDown || UScreen.currentScreen == null && PolySprintConfig.enabled && PolySprintConfig.toggleSprint && PolySprintConfig.toggleSprintState && keyBinding === gameSettings.keyBindSprint
+    return keyBinding.isKeyDown || UScreen.currentScreen == null && PolySprintConfig.enabled && PolySprintConfig.toggleSprint && PolySprintConfig.toggleSprintState
 }
 
 fun shouldSetSneak(keyBinding: KeyBinding): Boolean {
-    return keyBinding.isKeyDown || UScreen.currentScreen == null && PolySprintConfig.enabled && PolySprintConfig.toggleSneak && PolySprintConfig.toggleSneakState && keyBinding === gameSettings.keyBindSneak
+    return keyBinding.isKeyDown || UScreen.currentScreen == null && PolySprintConfig.enabled && PolySprintConfig.toggleSneak && PolySprintConfig.toggleSneakState
 }
 
 fun shouldFlyBoost(): Boolean {
