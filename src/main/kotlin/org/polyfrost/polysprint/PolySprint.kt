@@ -28,6 +28,7 @@ import org.polyfrost.oneconfig.api.event.v1.events.Event
 import org.polyfrost.oneconfig.api.hud.v1.HudManager
 import org.polyfrost.polysprint.commands.PolySprintCommand
 import org.polyfrost.polysprint.core.PolySprintConfig
+import org.polyfrost.polysprint.core.PolySprintHud
 import org.polyfrost.polysprint.core.checkKeyCode
 import org.polyfrost.universal.UMinecraft
 
@@ -61,7 +62,7 @@ object PolySprint {
 
     @Mod.EventHandler
     fun onPostInit(event: FMLPostInitializationEvent) {
-        HudManager.register(PolySprintConfig.ToggleSprintHud())
+        HudManager.register(PolySprintHud())
         CommandManager.registerCommand(PolySprintCommand())
     }
 
