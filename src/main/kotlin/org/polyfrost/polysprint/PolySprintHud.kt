@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.polyfrost.polysprint.core
+package org.polyfrost.polysprint
 
 import org.polyfrost.oneconfig.api.config.v1.annotations.Button
 import org.polyfrost.oneconfig.api.config.v1.annotations.Switch
@@ -139,14 +139,14 @@ class PolySprintHud : TextHud("") {
     var sprint = "Sprinting (vanilla)"
 
     override fun initialize() {
-        eventHandler { _: PolySprint.SneakStart -> isSneaking = true; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.SneakEnd -> isSneaking = false; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.FlyStart -> isFlying = true; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.FlyEnd -> isFlying = false; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.RideStart -> isRiding = true; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.RideEnd -> isRiding = false; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.SprintStart -> isSprinting = true; updateAndRecalculate() }.register()
-        eventHandler { _: PolySprint.SprintEnd -> isSprinting = false; updateAndRecalculate() }.register()
+        eventHandler { _: SneakStart -> isSneaking = true; updateAndRecalculate() }.register()
+        eventHandler { _: SneakEnd -> isSneaking = false; updateAndRecalculate() }.register()
+        eventHandler { _: FlyStart -> isFlying = true; updateAndRecalculate() }.register()
+        eventHandler { _: FlyEnd -> isFlying = false; updateAndRecalculate() }.register()
+        eventHandler { _: RideStart -> isRiding = true; updateAndRecalculate() }.register()
+        eventHandler { _: RideEnd -> isRiding = false; updateAndRecalculate() }.register()
+        eventHandler { _: SprintStart -> isSprinting = true; updateAndRecalculate() }.register()
+        eventHandler { _: SprintEnd -> isSprinting = false; updateAndRecalculate() }.register()
     }
 
     override fun getText(): String? {

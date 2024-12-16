@@ -58,7 +58,7 @@ object PolySprint
     }
 
     private fun postInitialize() {
-        HudManager.register(PolySprintConfig.ToggleSprintHud())
+        HudManager.register(PolySprintHud())
         CommandManager.registerCommand(PolySprintCommand())
     }
 
