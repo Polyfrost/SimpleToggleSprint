@@ -16,18 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.polyfrost.polysprint.core
+package org.polyfrost.polysprint
 
 import org.polyfrost.oneconfig.api.config.v1.Config
 import org.polyfrost.oneconfig.api.config.v1.annotations.*
 import org.polyfrost.oneconfig.api.event.v1.eventHandler
 import org.polyfrost.oneconfig.api.hud.v1.TextHud
 import org.polyfrost.oneconfig.api.ui.v1.keybind.KeybindManager.registerKeybind
-import org.polyfrost.polysprint.PolySprint
 import org.polyfrost.polyui.input.KeybindHelper
 import org.polyfrost.polyui.unit.fix
 import org.polyfrost.universal.UKeyboard
-
 
 object PolySprintConfig : Config(
     //VigilanceMigrator(File("./config/simpletogglesprint.toml").absolutePath),
@@ -249,14 +247,14 @@ object PolySprintConfig : Config(
         var sprint = "Sprinting (vanilla)"
 
         override fun initialize() {
-            eventHandler { _: PolySprint.SneakStart -> isSneaking = true; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.SneakEnd -> isSneaking = false; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.FlyStart -> isFlying = true; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.FlyEnd -> isFlying = false; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.RideStart -> isRiding = true; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.RideEnd -> isRiding = false; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.SprintStart -> isSprinting = true; updateAndRecalculate() }.register()
-            eventHandler { _: PolySprint.SprintEnd -> isSprinting = false; updateAndRecalculate() }.register()
+            eventHandler { _: SneakStart -> isSneaking = true; updateAndRecalculate() }.register()
+            eventHandler { _: SneakEnd -> isSneaking = false; updateAndRecalculate() }.register()
+            eventHandler { _: FlyStart -> isFlying = true; updateAndRecalculate() }.register()
+            eventHandler { _: FlyEnd -> isFlying = false; updateAndRecalculate() }.register()
+            eventHandler { _: RideStart -> isRiding = true; updateAndRecalculate() }.register()
+            eventHandler { _: RideEnd -> isRiding = false; updateAndRecalculate() }.register()
+            eventHandler { _: SprintStart -> isSprinting = true; updateAndRecalculate() }.register()
+            eventHandler { _: SprintEnd -> isSprinting = false; updateAndRecalculate() }.register()
         }
 
         override fun getText(): String? {

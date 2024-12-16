@@ -17,31 +17,33 @@
  */
 package org.polyfrost.polysprint
 
-import net.minecraftforge.common.MinecraftForge
+//#if FORGE
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
+//#else
+//$$ import net.fabricmc.api.ClientModInitializer
+//$$ import net.legacyfabric.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+//#endif
+
 import org.polyfrost.oneconfig.api.commands.v1.CommandManager
-import org.polyfrost.oneconfig.api.event.v1.events.Event
 import org.polyfrost.oneconfig.api.hud.v1.HudManager
-import org.polyfrost.polysprint.commands.PolySprintCommand
-import org.polyfrost.polysprint.core.PolySprintConfig
-import org.polyfrost.polysprint.core.checkKeyCode
 import org.polyfrost.universal.UMinecraft
 
-@Mod(
-    modid = PolySprint.MODID,
-    name = PolySprint.MOD_NAME,
-    version = PolySprint.VERSION,
-    clientSideOnly = true,
-    modLanguageAdapter = "org.polyfrost.oneconfig.utils.v1.forge.KotlinLanguageAdapter"
-)
-object PolySprint {
+//#if FORGE
+@Mod(modid = PolySprint.ID, version = PolySprint.VERSION, name = PolySprint.NAME, modLanguageAdapter = "org.polyfrost.oneconfig.utils.v1.forge.KotlinLanguageAdapter")
+//#endif
+object PolySprint
+    //#if FABRIC
+    //$$ : ClientModInitializer
+    //#endif
+{
 
-    const val MODID = "@MOD_ID@"
-    const val MOD_NAME = "@MOD_NAME@"
+    const val ID = "@MOD_ID@"
+    const val NAME = "@MOD_NAME@"
     const val VERSION = "@MOD_VERSION@"
     val player
         get() = UMinecraft.getPlayer()
@@ -51,26 +53,23 @@ object PolySprint {
     var sprintHeld = false
     var sneakHeld = false
 
-    @Mod.EventHandler
-    fun onInit(event: FMLInitializationEvent) {
-        println("PolySprint initialized")
-
+    private fun initialize() {
         PolySprintConfig
-        MinecraftForge.EVENT_BUS.register(this)
     }
 
-    @Mod.EventHandler
-    fun onPostInit(event: FMLPostInitializationEvent) {
+    private fun postInitialize() {
         HudManager.register(PolySprintConfig.ToggleSprintHud())
         CommandManager.registerCommand(PolySprintCommand())
     }
 
+    private fun handleInput() {
+        if (!PolySprintConfig.enabled) {
+            return
+        }
 
-    @SubscribeEvent
-    fun onInput(event: InputEvent) {
-        if (!PolySprintConfig.enabled) return
         val sprint = gameSettings.keyBindSprint.keyCode
         val sneak = gameSettings.keyBindSneak.keyCode
+
         if (!PolySprintConfig.keybindToggleSprint && checkKeyCode(sprint)) {
             if (PolySprintConfig.enabled && PolySprintConfig.toggleSprint && !sprintHeld) {
                 PolySprintConfig.toggleSprintState = !PolySprintConfig.toggleSprintState
@@ -80,6 +79,7 @@ object PolySprint {
         } else {
             sprintHeld = false
         }
+
         if (!PolySprintConfig.keybindToggleSneak && checkKeyCode(sneak)) {
             if (PolySprintConfig.enabled && PolySprintConfig.toggleSneak && !sneakHeld) {
                 PolySprintConfig.toggleSneakState = !PolySprintConfig.toggleSneakState
@@ -91,12 +91,31 @@ object PolySprint {
         }
     }
 
-    object SprintStart : Event
-    object SprintEnd : Event
-    object RideStart : Event
-    object RideEnd : Event
-    object SneakStart : Event
-    object SneakEnd : Event
-    object FlyStart : Event
-    object FlyEnd : Event
+    //#if FORGE
+    @Mod.EventHandler
+    fun fmlInitialize(event: FMLInitializationEvent) {
+        initialize()
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    @Mod.EventHandler
+    fun fmlPostInitialize(event: FMLPostInitializationEvent) {
+        postInitialize()
+    }
+
+    @SubscribeEvent
+    fun onInput(event: InputEvent) {
+        handleInput()
+    }
+    //#else
+    //$$ override fun onInitializeClient() {
+    //$$     initialize()
+    //$$     postInitialize()
+    //$$
+    //$$     ClientTickEvents.START_CLIENT_TICK.register { client ->
+    //$$         handleInput()
+    //$$     }
+    //$$ }
+    //#endif
+
 }

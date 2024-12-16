@@ -1,7 +1,7 @@
 {
   "compatibilityLevel": "JAVA_8",
   "package": "org.polyfrost.polysprint.mixins",
-  "plugin": "org.polyfrost.polysprint.tweaker.MixinPlugin",
+  "plugin": "org.polyfrost.polysprint.PolySprintMixinPlugin",
   "refmap": "mixins.polysprint.refmap.json",
   "mixins": [
     "EntityLivingBaseMixin",

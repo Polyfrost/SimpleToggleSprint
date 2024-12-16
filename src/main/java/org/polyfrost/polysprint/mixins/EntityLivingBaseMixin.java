@@ -23,7 +23,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import org.polyfrost.oneconfig.api.event.v1.EventManager;
 import org.polyfrost.oneconfig.api.event.v1.events.Event;
-import org.polyfrost.polysprint.PolySprint;
+import org.polyfrost.polysprint.RideEnd;
+import org.polyfrost.polysprint.RideStart;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,14 +32,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityLivingBase.class)
 public abstract class EntityLivingBaseMixin {
+
     @Inject(method = "mountEntity", at = @At("HEAD"))
     private void onMount(Entity entityIn, CallbackInfo ci) {
         //noinspection ConstantConditions
         if ((Object) this == Minecraft.getMinecraft().thePlayer) {
             Event ev;
-            if (entityIn != null) ev = PolySprint.RideStart.INSTANCE;
-            else ev = PolySprint.RideEnd.INSTANCE;
+            if (entityIn != null) {
+                ev = RideStart.INSTANCE;
+            } else {
+                ev = RideEnd.INSTANCE;
+            }
+
             EventManager.INSTANCE.post(ev);
         }
     }
+
 }

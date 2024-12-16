@@ -16,16 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-plugins {
-    id("dev.deftu.gradle.multiversion-root")
-}
+package org.polyfrost.polysprint
 
-preprocess {
-    "1.12.2-forge"(11202, "srg") {
-        "1.12.2-fabric"(11202, "yarn") {
-            "1.8.9-fabric"(10809, "yarn") {
-                "1.8.9-forge"(10809, "srg")
-            }
-        }
-    }
-}
+import org.polyfrost.oneconfig.api.event.v1.events.Event
+
+object SprintStart : Event
+
+object SprintEnd : Event
+
+object RideStart : Event
+
+object RideEnd : Event
+
+object SneakStart : Event
+
+object SneakEnd : Event
+
+object FlyStart : Event
+
+object FlyEnd : Event

@@ -28,9 +28,7 @@ import net.minecraft.world.World;
 import org.objectweb.asm.Opcodes;
 import org.polyfrost.oneconfig.api.event.v1.EventManager;
 import org.polyfrost.oneconfig.api.event.v1.events.Event;
-import org.polyfrost.polysprint.PolySprint;
-import org.polyfrost.polysprint.core.PolySprintConfig;
-import org.polyfrost.polysprint.core.UtilsKt;
+import org.polyfrost.polysprint.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -81,15 +79,16 @@ public abstract class EntityPlayerSPMixin extends AbstractClientPlayer {
     )
     private void modifyFlightSpeed(CallbackInfo ci) {
         if (UtilsKt.shouldFlyBoost()) {
-            capabilities.setFlySpeed(0.05F * PolySprintConfig.INSTANCE.getFlyBoostAmount());
-            if (movementInput.sneak) {
-                motionY -= 0.15F * PolySprintConfig.INSTANCE.getFlyBoostAmount();
+            this.capabilities.setFlySpeed(0.05F * PolySprintConfig.INSTANCE.getFlyBoostAmount());
+            if (this.movementInput.sneak) {
+                this.motionY -= 0.15F * PolySprintConfig.INSTANCE.getFlyBoostAmount();
             }
-            if (movementInput.jump) {
-                motionY += 0.15F * PolySprintConfig.INSTANCE.getFlyBoostAmount();
+
+            if (this.movementInput.jump) {
+                this.motionY += 0.15F * PolySprintConfig.INSTANCE.getFlyBoostAmount();
             }
         } else {
-            capabilities.setFlySpeed(0.05F);
+            this.capabilities.setFlySpeed(0.05F);
         }
     }
 
@@ -100,16 +99,24 @@ public abstract class EntityPlayerSPMixin extends AbstractClientPlayer {
     private void onSetFlying(PlayerCapabilities instance, boolean state) {
         instance.isFlying = state;
         Event ev;
-        if (state) ev = PolySprint.FlyStart.INSTANCE;
-        else ev = PolySprint.FlyEnd.INSTANCE;
+        if (state) {
+            ev = FlyStart.INSTANCE;
+        } else {
+            ev = FlyEnd.INSTANCE;
+        }
+
         EventManager.INSTANCE.post(ev);
     }
 
     @Inject(method = "setSprinting", at = @At("HEAD"))
     private void onSetSprinting(boolean state, CallbackInfo ci) {
         Event ev;
-        if (state) ev = PolySprint.SprintStart.INSTANCE;
-        else ev = PolySprint.SprintEnd.INSTANCE;
+        if (state) {
+            ev = SprintStart.INSTANCE;
+        } else {
+            ev = SprintEnd.INSTANCE;
+        }
+
         EventManager.INSTANCE.post(ev);
     }
 

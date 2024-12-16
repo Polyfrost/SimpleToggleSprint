@@ -23,8 +23,9 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.MovementInputFromOptions;
 import org.polyfrost.oneconfig.api.event.v1.EventManager;
 import org.polyfrost.oneconfig.api.event.v1.events.Event;
-import org.polyfrost.polysprint.PolySprint;
-import org.polyfrost.polysprint.core.UtilsKt;
+import org.polyfrost.polysprint.SneakEnd;
+import org.polyfrost.polysprint.SneakStart;
+import org.polyfrost.polysprint.UtilsKt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,10 +50,15 @@ public abstract class MovementInputFromOptionsMixin extends MovementInput {
         if (state != polysprint$sneaking) {
             polysprint$sneaking = state;
             Event ev;
-            if (state) ev = PolySprint.SneakStart.INSTANCE;
-            else ev = PolySprint.SneakEnd.INSTANCE;
+            if (state) {
+                ev = SneakStart.INSTANCE;
+            } else {
+                ev = SneakEnd.INSTANCE;
+            }
+
             EventManager.INSTANCE.post(ev);
         }
+
         return state;
     }
 

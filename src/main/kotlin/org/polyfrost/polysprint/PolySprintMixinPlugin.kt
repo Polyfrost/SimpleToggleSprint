@@ -16,18 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.polyfrost.polysprint.tweaker
+package org.polyfrost.polysprint
 
+//#if FORGE
 import net.minecraftforge.fml.relauncher.CoreModManager
 import org.polyfrost.oneconfig.api.ui.v1.Notifications
+//#endif
+
+//#if FORGE && MC <= 1.12.2
 import org.spongepowered.asm.lib.tree.ClassNode
+//#else
+//$$ import org.objectweb.asm.tree.ClassNode
+//#endif
+
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 
-class MixinPlugin : IMixinConfigPlugin {
+class PolySprintMixinPlugin : IMixinConfigPlugin {
 
+    //#if FORGE
     private var hasPlayerAPI = false
+    //#endif
+
     override fun onLoad(mixinPackage: String) {
+        //#if FORGE
         for ((key, value) in CoreModManager.getTransformers()) {
             if (key.startsWith("PlayerAPIPlugin") && value.contains("api.player.forge.PlayerAPITransformer")) {
                 println("PlayerAPI detected.")
@@ -36,14 +48,19 @@ class MixinPlugin : IMixinConfigPlugin {
                 break
             }
         }
+        //#endif
     }
 
     override fun getRefMapperConfig(): String? = null
 
     override fun shouldApplyMixin(targetClassName: String, mixinClassName: String): Boolean {
+        //#if FORGE
         return if (mixinClassName.startsWith("org.polyfrost.polysprint.mixins.playerapi.")) {
             hasPlayerAPI
         } else true
+        //#else
+        //$$ return true
+        //#endif
     }
 
     override fun acceptTargets(myTargets: Set<String>, otherTargets: Set<String>) {}

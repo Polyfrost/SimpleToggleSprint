@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.polyfrost.polysprint.commands
+package org.polyfrost.polysprint
 
 import org.polyfrost.oneconfig.api.commands.v1.factories.annotated.Command
-import org.polyfrost.polysprint.core.PolySprintConfig
+import org.polyfrost.oneconfig.utils.v1.dsl.openUI
 
 @Command("polysprint", "sts", "togglesprint", "togglesneak", "simpletogglesprint")
 class PolySprintCommand {
 
     @Command
     fun execCommand() {
-        TODO("Not yet implemented")
-        // PolySprintConfig.openGui()
+        PolySprintConfig.openUI()
     }
+
 }
