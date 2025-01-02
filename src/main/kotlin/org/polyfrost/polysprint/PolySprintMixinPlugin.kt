@@ -23,12 +23,7 @@ import net.minecraftforge.fml.relauncher.CoreModManager
 import org.polyfrost.oneconfig.api.ui.v1.Notifications
 //#endif
 
-//#if FORGE && MC <= 1.12.2
-import org.spongepowered.asm.lib.tree.ClassNode
-//#else
-//$$ import org.objectweb.asm.tree.ClassNode
-//#endif
-
+import org.objectweb.asm.tree.ClassNode
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo
 
